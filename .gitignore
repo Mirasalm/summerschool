@@ -45,3 +45,7 @@ solutions/programming/fortran/io/io
 *.Rproj
 .RData
 .Rhistory
+
+#ignore output and error files
+*.out
+*.err
