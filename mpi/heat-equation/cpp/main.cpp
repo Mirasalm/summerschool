@@ -11,7 +11,12 @@ int main(int argc, char **argv)
 {
 
   // TODO start: initialize MPI
+    int i, rank, ntasks;
+    MPI_Status status;
 
+    MPI_Init(&argc, &argv);
+    MPI_Comm_size(MPI_COMM_WORLD, &ntasks);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   // TODO end
 
     const int image_interval = 100;    // Image output interval

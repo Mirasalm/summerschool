@@ -16,7 +16,7 @@ void exchange(Field& field, const ParallelData parallel)
     // to element, e.g. field.temperature.data(i, j)
 
     // Send to up, receive from down
-
+    MPI_Send(field.data(), size, MPI_DATATYPE, dest, tag, MPI_COMM_WORLD);
     // Send to down, receive from up
 
 
