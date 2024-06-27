@@ -53,7 +53,7 @@ int main(int argc, char **argv)
     // Time evolve
     for (int iter = 1; iter <= nsteps; iter++) {
         exchange(previous, parallelization);
-        evolve(current, previous, a, dt);
+        evolve(current, previous, a, dt, parallelization);
         if (iter % image_interval == 0) {
             write_field(current, iter, parallelization);
         }
