@@ -8,7 +8,7 @@ struct ParallelData {
     int size;            // Number of MPI tasks
     int rank;
     int nup, ndown;      // Ranks of neighbouring MPI tasks
-    MPI_Request* requests[4];
+    MPI_Request requests[4];
 
     ParallelData() {      // Constructor
 
@@ -64,9 +64,13 @@ struct Field {
 void initialize(int argc, char *argv[], Field& current,
                 Field& previous, int& nsteps, ParallelData parallel);
 
-void exchange(Field& field, const ParallelData& parallel);
+void exchange_init(Field& field, ParallelData& parallel);
 
-void evolve(Field& curr, const Field& prev, const double a, const double dt, ParallelData& parallel);
+void exchange_finalize(ParallelData& parallel);
+
+void evolve_interior(Field& curr, const Field& prev, const double a, const double dt);
+
+void evolve_edges(Field& curr, const Field& prev, const double a, const double dt);
 
 void write_field(const Field& field, const int iter, const ParallelData parallel);
 
