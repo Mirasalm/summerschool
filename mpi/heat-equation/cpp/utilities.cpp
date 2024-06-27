@@ -15,7 +15,7 @@ double average(const Field& field, const ParallelData parallel)
         local_average += field.temperature(i, j);
       }
     }
-    MPI_Reduce(&local_average, &average, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    MPI_Reduce(&local_average, &average, 1, MPI_DOUBLE, MPI_SUM, 0, parallel.comm);
     average /= (field.nx_full * field.ny_full);
 
 /*     if (0 == parallel.rank) {
