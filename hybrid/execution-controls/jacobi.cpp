@@ -23,21 +23,26 @@ int main()
     int iter = 0;
 
     double t_start = wtime();
+    int nx, ny;
 
-    #pragma omp parallel shared(norm, iter)
+
+    #pragma omp parallel default(none) shared(norm, iter, u, unew, b, nx, ny)
     {
 
     // TODO start: add necessary execution controls (single, master, barrier)
     //             in this parallel region
 
     // Read b
+    #pragma omp single
+    {
     read_file(b);
 
-    int nx = b.nx;
-    int ny = b.ny;
-
+    nx = b.nx;
+    ny = b.ny;
     // Allocate space also for  boundaries
     u.allocate(nx + 2, ny + 2);
+    }
+    // Implicit barrier
 
     // Initialize
     #pragma omp for
@@ -45,13 +50,21 @@ int main()
         for (int j=0; j < ny + 2; j++) 
             u(i, j) = 0.0;
 
+    #pragma omp single
+    {
     unew = u;
+    }
 
     // Jacobi iteration
     do {
+        #pragma omp barrier
+        #pragma omp single
+        {
         norm = 0.0;
+        }
+        // Implicit barrier
 
-        #pragma omp for reduction(+:norm)
+        #pragma omp for reduction(+:norm) collapse(2)
         for (int i=1; i < nx + 1; i++)
             for (int j=1; j < ny + 1; j++) {
                 unew(i, j) = 0.25 * (u(i, j - 1) + u(i, j + 1) + 
@@ -61,12 +74,17 @@ int main()
                 norm += (unew(i, j) - u(i, j)) * (unew(i, j) - u(i, j));
             } 
 
+        #pragma omp single nowait
+        {
         std::swap(unew, u);
-
+        }
+        #pragma omp single
+        {
         if (iter % 500 == 0)
             std::cout << "Iteration " << iter << " norm: " << norm << std::endl;
         iter++;    
-
+        }
+        // Implicit barrier
     } while (norm > eps);
 
     // TODO end
