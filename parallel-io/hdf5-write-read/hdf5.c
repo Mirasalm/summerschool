@@ -111,6 +111,16 @@ void h5_reader(int my_id, int *localvector, int localsize)
     /* Create the handle for parallel file access property list
        and open a file for reading */
 
+    // Create a new property list for file access
+    hid_t plist = H5Pcreate(H5P_FILE_ACCESS);
+    // Store MPI IO communicator info to the file access property list
+    H5Pset_fapl_mpio(plist, MPI_COMM_WORLD, MPI_INFO_NULL);
+
+    char* filename = malloc(sizeof(char)*10 + 10); // TODO: add better malloc logic, this should be good enough though.
+    printf(filename, "vector_%i.h5",my_id);
+
+    hid_t file = H5Dopen(filename, "Vectors", plist);
+
     /* Open the dataset and get the filespace id */
 
     /* Select a hyperslab of the file dataspace */
