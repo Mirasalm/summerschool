@@ -10,7 +10,7 @@ int main(void)
     
     
     sum = 0.0;
-#pragma omp parallel
+#pragma omp parallel default(none) shared(sum, vecA)
 {
 
     /* Initialization of the vectors */
