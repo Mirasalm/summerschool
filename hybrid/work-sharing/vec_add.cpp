@@ -6,7 +6,10 @@ int main(void)
 {
     double vecA[NX], vecB[NX], vecC[NX];
 
+#pragma omp parallel
+{
     /* Initialization of the vectors */
+    #pragma omp for
     for (int i = 0; i < NX; i++) {
         vecA[i] = 1.0 / ((double)(NX - i));
         vecB[i] = vecA[i] * vecA[i];
@@ -16,11 +19,11 @@ int main(void)
      *   Implement here a parallelized version of vector addition,
      *   vecC = vecA + vecB
      */
-    #pragma omp parallel for
+    #pragma omp for
     for (int i = 0; i < NX; i++) {
         vecC[i] = vecA[i] + vecB[i];
     }
-
+}
     double sum = 0.0;
     /* Compute the check value */
     for (int i = 0; i < NX; i++) {
