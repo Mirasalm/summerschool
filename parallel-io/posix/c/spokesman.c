@@ -54,7 +54,9 @@ void single_writer(int my_id, int *localvector, int localsize)
     /* TODO: Implement a function that will write the data to file so that
        a single process does the file io. Use rank WRITER_ID as the io rank */
 
-    fullvector = (int *) malloc(DATASIZE * sizeof(int)); // TODO: Is there way to just initialize this for the writer rank without causing a mess?
+    if (my_id == WRITER_ID) {
+        fullvector = (int *) malloc(DATASIZE * sizeof(int)); 
+    }
 
     MPI_Gather(localvector, localsize, MPI_INT, fullvector, localsize, MPI_INT, WRITER_ID, MPI_COMM_WORLD);
     
