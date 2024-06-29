@@ -33,11 +33,13 @@ int main(int argc, char **argv)
     #else
       num_threads = 1;
     #endif
-    }
+    
     // TODO end
     initialize(argc, argv, current, previous, nsteps);
 
     // Output the initial field
+    #pragma omp single
+    {
     write_field(current, 0);
 
     auto average_temp = average(current);
@@ -47,30 +49,37 @@ int main(int argc, char **argv)
     std::cout << "Number of OpenMP threads: " << num_threads << std::endl;
     std::cout << std::fixed << std::setprecision(6);
     std::cout << "Average temperature at start: " << average_temp << std::endl;
-    
+    }
     const double a = 0.5;     // Diffusion constant 
     auto dx2 = current.dx * current.dx;
     auto dy2 = current.dy * current.dy;
     // Largest stable time step 
     auto dt = dx2 * dy2 / (2.0 * a * (dx2 + dy2));
 
-    //Get the start time stamp 
+    //Get the start time stamp
     auto start_clock = wtime();
 
     // Time evolve
     for (int iter = 1; iter <= nsteps; iter++) {
+        //evolve has sync at the start of each call
         evolve(current, previous, a, dt);
+        #pragma omp barrier
+        #pragma omp single
+        {
         if (iter % image_interval == 0) {
             write_field(current, iter);
         }
         // Swap current field so that it will be used
         // as previous for next iteration step
         std::swap(current, previous);
+        }
     }
+    
     auto stop_clock = wtime();
-
+    #pragma omp single
+    {
     // Average temperature for reference 
-    average_temp = average(previous);
+    auto average_temp = average(previous);
     std::cout << "Iteration took " << (stop_clock - start_clock)
               << " seconds." << std::endl;
     std::cout << "Average temperature: " << average_temp << std::endl;
@@ -78,11 +87,13 @@ int main(int argc, char **argv)
       std::cout << "Reference value with default arguments: " 
                 << 59.281239 << std::endl;
     }
+    } // End single
+    } // End parallel region
 
     // Output the final field
     write_field(previous, nsteps);
 
-     return 0;
+    return 0;
 }
 
 double wtime() {
