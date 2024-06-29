@@ -28,24 +28,32 @@ int fib(int n)
   if (n < 2)
     return n;
 
+  #pragma omp task default(none) shared(x,n)
   x = fib(n - 1);
 
+  #pragma omp task default(none) shared(y,n)
   y = fib(n - 2);
 
+  #pragma omp taskwait
   return x+y;
 
 }
 
 
-int main()
+int main(int argc, char **argv)
 {
   int n,fibonacci;
   double starttime;
-  printf("Please insert n, to calculate fib(n): \n");
-  scanf("%d",&n);
+  //printf("Please insert n, to calculate fib(n): \n");
+  //scanf("%d",&n);
+  n = std::atoi(argv[1]);
   starttime=omp_get_wtime();
 
+  #pragma omp parallel
+  {
+  #pragma omp single
   fibonacci=fib(n);
+  }
 
   printf("fib(%d)=%d \n",n,fibonacci);
   printf("calculation took %lf sec\n",omp_get_wtime()-starttime);
