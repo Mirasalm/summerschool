@@ -20,14 +20,21 @@ int main(int argc, char **argv)
 
     int nsteps;                 // Number of time steps
 
-    int num_threads = 1;
+    int num_threads;
 
     Field current, previous;    // Current and previous temperature fields
 
     // TODO: determine number of threads
-
+    #pragma omp parallel
+    { 
+    #ifdef _OPENMP
+      #pragma omp single
+      num_threads = omp_get_num_threads();
+    #else
+      num_threads = 1;
+    #endif
+    }
     // TODO end
-
     initialize(argc, argv, current, previous, nsteps);
 
     // Output the initial field
@@ -60,7 +67,6 @@ int main(int argc, char **argv)
         // as previous for next iteration step
         std::swap(current, previous);
     }
-
     auto stop_clock = wtime();
 
     // Average temperature for reference 
