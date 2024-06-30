@@ -38,6 +38,8 @@ int main(int argc, char **argv)
     //Get the start time stamp 
     auto start_clock = omp_get_wtime();
 
+    // Start data offload
+    enter_data(current, previous);
     // Time evolve
     for (int iter = 1; iter <= nsteps; iter++) {
         evolve(current, previous, a, dt);
@@ -48,6 +50,9 @@ int main(int argc, char **argv)
         // as previous for next iteration step
         std::swap(current, previous);
     }
+
+    // End data offload
+    exit_data(current, previous);
 
     auto stop_clock = omp_get_wtime();
 

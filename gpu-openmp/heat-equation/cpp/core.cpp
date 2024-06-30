@@ -6,8 +6,6 @@
 void evolve(Field& curr, Field& prev, const double a, const double dt)
 {
 
-  enter_data(curr, prev);
-
   // Compilers do not necessarily optimize division to multiplication, so make it explicit
   auto inv_dx2 = 1.0 / (prev.dx * prev.dx);
   auto inv_dy2 = 1.0 / (prev.dy * prev.dy);
@@ -37,9 +35,6 @@ void evolve(Field& curr, Field& prev, const double a, const double dt)
 	     (prevdata[jp] - 2.0*prevdata[ind] + prevdata[jm]) * inv_dy2);
     }
   }
-  update_host(curr);
-  update_host(prev);
-  exit_data(curr,prev);
 
 }
 
