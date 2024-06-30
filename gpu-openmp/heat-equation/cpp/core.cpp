@@ -21,9 +21,8 @@ void evolve(Field& curr, Field& prev, const double a, const double dt)
   // As we have fixed boundary conditions, the outermost gridpoints
   // are not updated.
 
-  #pragma omp target teams distribute
+  #pragma omp target teams distribute parallel for collapse(2)
   for (int i = 1; i < nx + 1; i++) {
-    #pragma omp parallel for
     for (int j = 1; j < ny + 1; j++) {
       int ind = i * (ny + 2) + j;
       int ip = (i + 1) * (ny + 2) + j;
