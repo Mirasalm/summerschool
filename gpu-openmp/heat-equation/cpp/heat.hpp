@@ -32,3 +32,10 @@ void write_field(const Field& field, const int iter);
 void read_field(Field& field, std::string filename);
 
 double average(const Field& field);
+
+void enter_data(Field& field1, Field& field2);
+
+void exit_data(Field& field1, Field& field2);
+
+void update_host(Field& field1);
+
